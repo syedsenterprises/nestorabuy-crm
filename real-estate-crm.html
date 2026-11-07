@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Real Estate CRM — NestoraBuy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5F4;
+    --surface:#FFFFFF;
+    --surface-2:#EEF2F0;
+    --ink:#13221C;
+    --muted:#5B6B62;
+    --line:#DCE3DE;
+    --navy:#0E2E3B;
+    --navy-2:#123C4D;
+    --teal:#0B6B4F;
+    --teal-light:#E6F3ED;
+    --gold:#C49A2B;
+    --gold-light:#FBF3D9;
+    --red:#B42318;
+    --red-light:#FDECEA;
+    --amber:#9A6700;
+    --amber-light:#FFF4D6;
+    --blue:#175CD3;
+    --blue-light:#EAF1FE;
+    --shadow:0 1px 2px rgba(16,40,30,.06),0 8px 24px rgba(16,40,30,.06);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0D1512;
+      --surface:#16211C;
+      --surface-2:#1C2A23;
+      --ink:#EAF2ED;
+      --muted:#9AB0A4;
+      --line:#2A3A32;
+      --navy:#0A222E;
+      --navy-2:#0E2E3B;
+      --teal:#2FBF8F;
+      --teal-light:#14362A;
+      --gold:#E3B93E;
+      --gold-light:#332B10;
+      --red:#FF8A7A;
+      --red-light:#3A1D19;
+      --amber:#FFC94D;
+      --amber-light:#38300F;
+      --blue:#7FB0FF;
+      --blue-light:#162A4A;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+      color-scheme:dark;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal)}
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+  /* ---------- Layout ---------- */
+  .shell{display:flex;min-height:100vh}
+  .sidebar{
+    width:248px;flex:0 0 248px;background:var(--navy);color:#EAF4F1;
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:22px 16px;
+  }
+  .brand{padding:2px 8px 18px;border-bottom:1px solid rgba(255,255,255,.14)}
+  .brand .mark{font-family:"Fraunces",serif;font-size:24px;font-weight:800;letter-spacing:-.02em;color:#fff;line-height:1.1}
+  .brand .mark span{color:var(--gold)}
+  .brand p{margin:6px 0 0;font-size:12.5px;color:#A9C4BC;line-height:1.45}
+  .domain-pill{margin-top:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:9px 11px}
+  .domain-pill small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8FB0A5;font-weight:700}
+  .domain-pill strong{font-size:14px;color:#fff;word-break:break-all}
+  .nav{margin-top:18px;display:flex;flex-direction:column;gap:4px}
+  .nav button{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+    background:transparent;border:0;color:#C9DCD6;padding:11px 12px;border-radius:10px;font-weight:600;font-size:15px;
+  }
+  .nav button svg{flex:0 0 20px;opacity:.85}
+  .nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+  .nav button.active{background:#fff;color:var(--navy)}
+  .nav button.active svg{opacity:1}
+  .nav .count{margin-left:auto;background:var(--gold);color:#1A1405;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px}
+  .nav button.active .count{background:var(--navy);color:#fff}
+  .side-foot{margin-top:auto;padding:14px 8px 2px;border-top:1px solid rgba(255,255,255,.14);font-size:12.5px;color:#A9C4BC;line-height:1.55}
+  .side-foot strong{color:#fff}
+
+  .main{flex:1;min-width:0;padding:26px 28px 56px}
+  .wrap{max-width:1180px;margin:0 auto}
+
+  /* ---------- Top bar (mobile) ---------- */
+  .topbar{display:none}
+
+  /* ---------- Headings / common ---------- */
+  .view{display:none}
+  .view.active{display:block;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.view.active{animation:none} html{scroll-behavior:auto}}
+  .page-head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:6px}
+  h1{font-family:"Fraunces",serif;font-size:clamp(26px,3.4vw,36px);line-height:1.08;margin:0;letter-spacing:-.01em}
+  h2{font-size:19px;margin:0;letter-spacing:-.01em}
+  h3{font-size:15px;margin:0}
+  .sub{color:var(--muted);margin:6px 0 0;max-width:62ch;font-size:15px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border-radius:10px;border:1px solid transparent;
+    padding:10px 16px;font-weight:700;font-size:14.5px;text-decoration:none;background:var(--surface);color:var(--ink);
+  }
+  .btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+  @media (prefers-color-scheme: dark){.btn-primary{color:#06231A}}
+  .btn-primary:hover{filter:brightness(1.07)}
+  .btn-ghost{border-color:var(--line)}
+  .btn-ghost:hover{background:var(--surface-2)}
+  .btn-small{padding:7px 12px;font-size:13.5px;border-radius:8px}
+  .btn-danger{background:var(--red-light);color:var(--red);border-color:transparent}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+  .section{margin-top:26px}
+  .section-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .hint{font-size:13px;color:var(--muted)}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .b-hot{background:var(--red-light);color:var(--red)}
+  .b-warm{background:var(--amber-light);color:var(--amber)}
+  .b-cold{background:var(--blue-light);color:var(--blue)}
+  .b-stage{background:var(--teal-light);color:var(--teal)}
+  .b-plain{background:var(--surface-2);color:var(--muted)}
+  .demo-note{display:flex;gap:10px;align-items:flex-start;background:var(--gold-light);border:1px solid var(--gold);border-radius:12px;padding:12px 14px;font-size:14px;margin-top:16px}
+  .demo-note strong{white-space:nowrap}
+
+  /* ---------- Stats ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+  .stat{padding:18px}
+  .stat .label{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .stat .num{font-family:"Fraunces",serif;font-size:36px;font-weight:800;line-height:1.1;margin-top:4px}
+  .stat .foot{font-size:13px;color:var(--muted);margin-top:2px}
+  .stat .foot b{color:var(--teal)}
+
+  /* ---------- Dashboard grid ---------- */
+  .dash-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-top:6px}
+  .pipe-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .pipe-row:last-child{border-bottom:0}
+  .pipe-row .name{width:118px;flex:0 0 118px;font-weight:700;font-size:14px}
+  .pipe-bar{flex:1;height:10px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+  .pipe-bar i{display:block;height:100%;background:var(--teal);border-radius:999px}
+  .pipe-row .n{width:30px;text-align:right;font-weight:800}
+  .task-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .task-item:last-child{border-bottom:0}
+  .task-dot{flex:0 0 10px;width:10px;height:10px;border-radius:50%;margin-top:7px;background:var(--gold)}
+  .task-dot.today{background:var(--red)}
+  .task-item .who{font-weight:700;font-size:14.5px}
+  .task-item .what{font-size:13.5px;color:var(--muted)}
+  .task-item.done .who,.task-item.done .what{text-decoration:line-through;opacity:.6}
+  .task-item .sp{margin-left:auto;flex:0 0 auto}
+
+  /* ---------- Toolbar / leads ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .toolbar input[type="search"]{flex:1 1 240px}
+  input[type="text"],input[type="search"],input[type="tel"],input[type="email"],select,textarea{
+    background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:15px;width:100%;
+  }
+  input::placeholder{color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13.5px}
+  .chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .lead-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+  .lead{padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:6px 16px}
+  .lead .top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .lead .name{font-size:17px;font-weight:800}
+  .lead .meta{color:var(--muted);font-size:14px;margin-top:2px}
+  .lead .want{font-size:14.5px;margin-top:6px}
+  .lead .want b{color:var(--teal)}
+  .lead .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;justify-content:flex-end}
+  .lead .footrow{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
+  .lead .footrow label{font-size:13px;font-weight:700;color:var(--muted)}
+  .lead .footrow select{width:auto;padding:7px 10px;font-size:13.5px;border-radius:8px}
+  .lead .due{font-size:13px;color:var(--muted);margin-left:auto}
+  .lead .due.over{color:var(--red);font-weight:800}
+  .empty{padding:34px 20px;text-align:center;color:var(--muted)}
+  .empty strong{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+  /* ---------- Form ---------- */
+  .form-card{padding:20px;margin-top:18px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
+  .field .req{color:var(--red)}
+  .form-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .form-error{display:none;background:var(--red-light);color:var(--red);border-radius:10px;padding:10px 13px;font-size:14px;font-weight:600;margin-top:12px}
+  .form-error.show{display:block}
+
+  /* ---------- Pipeline ---------- */
+  .pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  .col{padding:14px;min-height:120px}
+  .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .col-head .t{font-weight:800;font-size:14.5px}
+  .col-head .c{background:var(--surface-2);border-radius:999px;font-size:12px;font-weight:800;padding:1px 9px;color:var(--muted)}
+  .mini{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+  .mini .n{font-weight:800;font-size:14.5px}
+  .mini .d{font-size:13px;color:var(--muted);margin-top:1px}
+  .mini .row{display:flex;gap:6px;margin-top:10px}
+  .mini .row button{flex:1}
+  .col-empty{font-size:13px;color:var(--muted);text-align:center;padding:14px 6px;border:1px dashed var(--line);border-radius:12px}
+
+  /* ---------- Properties ---------- */
+  .prop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+  .prop{overflow:hidden}
+  .prop .thumb{height:110px;display:flex;align-items:flex-end;padding:12px;color:#fff}
+  .prop .thumb .tag{background:rgba(0,0,0,.45);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:800}
+  .t1{background:#275E63}.t2{background:#5B4A8A}.t3{background:#7A4E1D}.t4{background:#3E5C3A}
+  .prop .body{padding:16px 18px}
+  .prop .price{font-family:"Fraunces",serif;font-size:22px;font-weight:800}
+  .prop .specs{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:13.5px;margin-top:6px}
+  .prop .interested{margin-top:10px;font-size:13.5px}
+  .prop .interested b{color:var(--teal)}
+
+  /* ---------- Settings / domains ---------- */
+  .domain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  .domain-card{padding:15px 16px}
+  .domain-card .d{font-weight:800;font-size:15px;word-break:break-all}
+  .domain-card .u{font-size:13px;color:var(--muted);margin-top:3px}
+  .domain-card.chosen{border-color:var(--teal);background:var(--teal-light)}
+  .steps{counter-reset:step;margin:14px 0 0;padding:0;list-style:none}
+  .steps li{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:step;content:counter(step);flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translate(-50%,80px);background:var(--navy);color:#fff;
+    padding:12px 18px;border-radius:12px;font-weight:700;font-size:14.5px;box-shadow:0 12px 32px rgba(0,0,0,.3);
+    transition:transform .25s ease;z-index:60;max-width:min(92vw,480px);text-align:center;
+  }
+  .toast.show{transform:translate(-50%,0)}
+  @media (prefers-reduced-motion: reduce){.toast{transition:none}}
+
+  footer{margin-top:36px;color:var(--muted);font-size:13px;text-align:center}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1020px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .dash-grid{grid-template-columns:1fr}
+    .pipe-grid{grid-template-columns:repeat(2,1fr)}
+    .domain-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:760px){
+    .shell{flex-direction:column}
+    .sidebar{display:none}
+    .topbar{
+      display:block;position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;padding:14px 16px 12px;
+    }
+    .topbar .mark{font-family:"Fraunces",serif;font-size:21px;font-weight:800}
+    .topbar .mark span{color:var(--gold)}
+    .topbar .dom{font-size:12px;color:#A9C4BC;margin-top:1px}
+    .topbar .nav{flex-direction:row;flex-wrap:wrap;margin-top:12px;gap:6px}
+    .topbar .nav button{width:auto;padding:8px 13px;font-size:14px}
+    .topbar .nav button svg{display:none}
+    .topbar .nav .count{display:none}
+    .main{padding:20px 14px 48px}
+    .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+    .stat{padding:14px}
+    .stat .num{font-size:29px}
+    .pipe-grid{grid-template-columns:1fr}
+    .prop-grid{grid-template-columns:1fr}
+    .domain-grid{grid-template-columns:1fr}
+    .form-grid{grid-template-columns:1fr}
+    .lead{grid-template-columns:1fr}
+    .lead .actions{justify-content:flex-start}
+    .lead .due{margin-left:0}
+    .pipe-row .name{width:96px;flex-basis:96px}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ============ SIDEBAR (desktop) ============ -->
+  <aside class="sidebar" aria-label="Main">
+    <div class="brand">
+      <div class="mark">Nestora<span>Buy</span> CRM</div>
+      <p>Real estate leads, follow-ups and deals — in one clean place.</p>
+      <div class="domain-pill">
+        <small>Hosted on its own domain</small>
+        <strong>nestorabuy.us</strong>
+      </div>
+    </div>
+    <nav class="nav" data-nav>
+      <button data-view="dashboard" class="active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</button>
+      <button data-view="leads"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Leads<span class="count" id="navLeadCount">0</span></button>
+      <button data-view="pipeline"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="10"/><line x1="10" y1="21" x2="10" y2="4"/><line x1="16" y1="21" x2="16" y2="14"/><line x1="22" y1="21" x2="2" y2="21"/></svg>Pipeline</button>
+      <button data-view="properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>Properties</button>
+      <button data-view="tasks"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Follow-ups<span class="count" id="navTaskCount">0</span></button>
+      <button data-view="setup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Domain &amp; Setup</button>
+    </nav>
+    <div class="side-foot">
+      <strong>One rule:</strong> every lead always has a next step and a date. If both are filled, nothing gets lost.
+    </div>
+  </aside>
+
+  <!-- ============ TOP BAR (mobile) ============ -->
+  <div class="topbar">
+    <div class="mark">Nestora<span>Buy</span> CRM</div>
+    <div class="dom">Hosted on nestorabuy.us · separate from your other sites</div>
+    <nav class="nav" data-nav aria-label="Main">
+      <button data-view="dashboard" class="active">Dashboard</button>
+      <button data-view="leads">Leads</button>
+      <button data-view="pipeline">Pipeline</button>
+      <button data-view="properties">Properties</button>
+      <button data-view="tasks">Follow-ups</button>
+      <button data-view="setup">Setup</button>
+    </nav>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="wrap">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view active" id="view-dashboard">
+        <div class="page-head">
+          <div>
+            <h1>Good day. Here is your business at a glance.</h1>
+            <p class="sub">No clutter. Four numbers, today&rsquo;s calls, and where every deal stands.</p>
+          </div>
+          <button class="btn btn-primary" data-goto="leads" data-open-add="1">+ Add a lead</button>
+        </div>
+
+        <div class="demo-note" role="note">
+          <strong>Demo data</strong>
+          <span>The leads, properties and tasks below are sample entries so you can see how everything works. Add your real leads with the button above — this page keeps them for this visit, and you can download them as a file any time from the Leads tab.</span>
+        </div>
+
+        <div class="stats">
+          <div class="card stat"><div class="label">Total leads</div><div class="num" id="statTotal">0</div><div class="foot">people you are talking to</div></div>
+          <div class="card stat"><div class="label">Hot leads</div><div class="num" id="statHot">0</div><div class="foot">ready to buy — <b>call these first</b></div></div>
+          <div class="card stat"><div class="label">Follow-ups today</div><div class="num" id="statToday">0</div><div class="foot">calls &amp; messages due today</div></div>
+          <div class="card stat"><div class="label">Deals closed</div><div class="num" id="statClosed">0</div><div class="foot">won and finished</div></div>
+        </div>
+
+        <div class="dash-grid section">
+          <div class="card" style="padding:20px">
+            <div class="section-head" style="margin-bottom:4px">
+              <h2>Where deals stand</h2>
+              <button class="btn btn-ghost btn-small" data-goto="pipeline">Open pipeline →</button>
+            </div>
+            <div id="pipeSummary"></div>
+          </div>
+          <div class="card" style="padding:20px">
+            <div class="section-head" style="margin-bottom:4px">
+              <h2>Do today</h2>
+              <button class="btn btn-ghost btn-small" data-goto="tasks">All follow-ups →</button>
+            </div>
+            <div id="todayList"></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <h2>Newest leads</h2>
+            <button class="btn btn-ghost btn-small" data-goto="leads">See all leads →</button>
+          </div>
+          <div class="lead-list" id="recentLeads" style="margin-top:0"></div>
+        </div>
+      </section>
+
+      <!-- ===== LEADS ===== -->
+      <section class="view" id="view-leads">
+        <div class="page-head">
+          <div>
+            <h1>Leads</h1>
+            <p class="sub">Every person who asked about a property. Search, filter, call, or move them one step forward.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost" id="exportBtn">↓ Download leads (CSV)</button>
+            <button class="btn btn-primary" id="toggleAddBtn">+ Add a lead</button>
+          </div>
+        </div>
+
+        <div class="card form-card" id="addCard" hidden>
+          <h2>Add a new lead</h2>
+          <p class="hint" style="margin:4px 0 0">Only name and phone are required. You can fill the rest later.</p>
+          <form id="addForm" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="fName">Full name <span class="req">*</span></label><input type="text" id="fName" placeholder="e.g. Priya Nair" autocomplete="name"></div>
+              <div class="field"><label for="fPhone">Phone / WhatsApp <span class="req">*</span></label><input type="tel" id="fPhone" placeholder="e.g. +91 98XXX XXXXX" autocomplete="tel"></div>
+              <div class="field"><label for="fEmail">Email (optional)</label><input type="email" id="fEmail" placeholder="name@email.com" autocomplete="email"></div>
+              <div class="field"><label for="fWant">What are they looking for?</label><input type="text" id="fWant" placeholder="e.g. 2BHK flat in Pune"></div>
+              <div class="field"><label for="fBudget">Budget (optional)</label><input type="text" id="fBudget" placeholder="e.g. ₹60 lakh / $300k"></div>
+              <div class="field"><label for="fSource">Where did they come from?</label>
+                <select id="fSource"><option>Website</option><option>WhatsApp</option><option>Referral</option><option>LinkedIn</option><option>Phone call</option><option>Walk-in</option><option>Other</option></select>
+              </div>
+              <div class="field"><label for="fPriority">How serious are they?</label>
+                <select id="fPriority"><option value="Hot">Hot — ready to buy</option><option value="Warm" selected>Warm — interested</option><option value="Cold">Cold — just looking</option></select>
+              </div>
+              <div class="field"><label for="fDue">Next follow-up</label>
+                <select id="fDue"><option value="Today">Today</option><option value="Tomorrow">Tomorrow</option><option value="In 3 days">In 3 days</option><option value="Next week">Next week</option></select>
+              </div>
+            </div>
+            <div class="form-error" id="formError"></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Save lead</button>
+              <button type="button" class="btn btn-ghost" id="cancelAddBtn">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="toolbar">
+          <input type="search" id="searchBox" placeholder="Search by name, phone, place or property…" aria-label="Search leads">
+          <select id="stageFilter" style="flex:0 1 210px;width:auto" aria-label="Filter by stage">
+            <option value="">All stages</option>
+          </select>
+        </div>
+        <div class="chips" id="priorityChips" role="group" aria-label="Filter by priority">
+          <button class="chip active" data-pri="">All leads</button>
+          <button class="chip" data-pri="Hot">🔥 Hot</button>
+          <button class="chip" data-pri="Warm">Warm</button>
+          <button class="chip" data-pri="Cold">Cold</button>
+        </div>
+
+        <p class="hint" id="leadCountLine" style="margin-top:14px"></p>
+        <div class="lead-list" id="leadList"></div>
+      </section>
+
+      <!-- ===== PIPELINE ===== -->
+      <section class="view" id="view-pipeline">
+        <div class="page-head">
+          <div>
+            <h1>Pipeline</h1>
+            <p class="sub">A deal moves left to right: New → Contacted → Interested → Visit → Negotiation → Closed. Use the buttons on each card to move it — no dragging needed.</p>
+          </div>
+        </div>
+        <div class="pipe-grid" id="pipeGrid"></div>
+      </section>
+
+      <!-- ===== PROPERTIES ===== -->
+      <section class="view" id="view-properties">
+        <div class="page-head">
+          <div>
+            <h1>Properties</h1>
+            <p class="sub">Your listings in one list, with how many leads are interested in each.</p>
+          </div>
+        </div>
+        <div class="prop-grid" id="propGrid"></div>
+      </section>
+
+      <!-- ===== TASKS ===== -->
+      <section class="view" id="view-tasks">
+        <div class="page-head">
+          <div>
+            <h1>Follow-ups</h1>
+            <p class="sub">The only list you must clear every day. Finish a task and press Done — it stays visible, crossed out, so the day&rsquo;s work is on record.</p>
+          </div>
+        </div>
+        <div class="card" style="padding:8px 20px;margin-top:18px">
+          <div id="taskList"></div>
+        </div>
+        <div class="card form-card">
+          <h2>Add a follow-up</h2>
+          <form id="taskForm" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="tWho">Person</label><input type="text" id="tWho" placeholder="e.g. Rahul Sharma"></div>
+              <div class="field"><label for="tWhat">What to do</label><input type="text" id="tWhat" placeholder="e.g. Call and confirm site visit"></div>
+              <div class="field"><label for="tWhen">When</label>
+                <select id="tWhen"><option>Today</option><option>Tomorrow</option><option>Next week</option></select>
+              </div>
+            </div>
+            <div class="form-error" id="taskError"></div>
+            <div class="form-actions"><button type="submit" class="btn btn-primary">Add follow-up</button></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ===== SETUP ===== -->
+      <section class="view" id="view-setup">
+        <div class="page-head">
+          <div>
+            <h1>Domain &amp; setup</h1>
+            <p class="sub">The CRM gets its own home, away from Estate Path and your other sites, so nothing clashes and clients see one clean address.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;margin-top:18px">
+          <h2>Chosen domain: nestorabuy.us</h2>
+          <p style="margin:8px 0 0;color:var(--muted);font-size:15px">Picked from your IONOS domains. The name reads as &ldquo;nest or buy&rdquo; — home and purchase in one word, <strong style="color:var(--ink)">.us</strong> fits your US brokerage market, and it is not tied to billing or any other project — so the CRM can be hosted, moved or sold later without touching anything else. The address clients would use is <strong style="color:var(--ink)">crm.nestorabuy.us</strong> (or the plain domain, your choice at hosting time).</p>
+        </div>
+
+        <h2 style="margin-top:26px">Your other domains — what each is best kept for</h2>
+        <div class="domain-grid" id="domainGrid"></div>
+
+        <div class="card" style="padding:20px;margin-top:26px">
+          <h2>How to put this CRM live on nestorabuy.us</h2>
+          <ol class="steps">
+            <li><span><strong>Keep this design as the front end.</strong> This page is the new clean CRM — same screens your team sees here.</span></li>
+            <li><span><strong>Host it separately on nestorabuy.us.</strong> Point <strong>crm.nestorabuy.us</strong> in IONOS DNS to the new host only. Do not touch the Estate Path or Syed Enterprises records.</span></li>
+            <li><span><strong>Add the database on the new host.</strong> Leads added here stay for the visit only. On the live host, connect the same screens to a database so leads, follow-ups and deals save permanently and the whole team sees the same data.</span></li>
+            <li><span><strong>Give each team member a login.</strong> Owner sees everything; agents see only their own leads. That one rule ends most CRM confusion.</span></li>
+            <li><span><strong>Move old data once, cleanly.</strong> Export the old CRM&rsquo;s leads to CSV, match the columns (name, phone, looking for, budget, stage), and import here. Do not copy the old layout — only the data.</span></li>
+          </ol>
+        </div>
+
+        <div class="card" style="padding:20px;margin-top:16px">
+          <h2>The 5 simple rules this CRM follows</h2>
+          <ol class="steps">
+            <li><span><strong>One screen, one job.</strong> Dashboard = today. Leads = people. Pipeline = deals. Follow-ups = calls to make. Nothing is buried in menus.</span></li>
+            <li><span><strong>Every lead has a next step and a date.</strong> A lead with no follow-up date is a lead being lost.</span></li>
+            <li><span><strong>Hot leads first.</strong> They are always marked red and counted on the dashboard.</span></li>
+            <li><span><strong>Buttons, not dragging.</strong> Every action is a labelled button that works the same on phone and computer.</span></li>
+            <li><span><strong>Plain words.</strong> &ldquo;Interested&rdquo;, &ldquo;Visit&rdquo;, &ldquo;Closed&rdquo; — stages anyone understands on day one.</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <footer>NestoraBuy CRM · nestorabuy.us · Demo build with sample data — connect a database on the live host to save data permanently.</footer>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STAGES = ["New","Contacted","Interested","Visit","Negotiation","Closed"];
+
+  var leads = [
+    {id:1, name:"Rahul Sharma", phone:"+91 98200 11223", email:"rahul.s@gmail.com", want:"2BHK flat in Andheri West, Mumbai", budget:"₹85 lakh", source:"Website", priority:"Hot", stage:"Interested", due:"Today", prop:"Skyline Residency, Andheri"},
+    {id:2, name:"Sarah Johnson", phone:"+1 407 555 0184", email:"sarah.j@outlook.com", want:"3-bed single family home, Orlando FL", budget:"$420,000", source:"Referral", priority:"Hot", stage:"Visit", due:"Today", prop:"Lakeview Family Home, Orlando"},
+    {id:3, name:"Amit Verma", phone:"+91 99110 44556", email:"", want:"Commercial office space, Gurugram", budget:"₹2.5 crore", source:"LinkedIn", priority:"Warm", stage:"Contacted", due:"Tomorrow", prop:"Business Tower Office, Gurugram"},
+    {id:4, name:"Michael Carter", phone:"+1 512 555 0117", email:"m.carter@yahoo.com", want:"Investment duplex, Austin TX", budget:"$350,000", source:"Website", priority:"Warm", stage:"New", due:"Tomorrow", prop:""},
+    {id:5, name:"Priya Nair", phone:"+91 97420 77889", email:"priya.nair@gmail.com", want:"3BHK apartment near Whitefield, Bengaluru", budget:"₹1.1 crore", source:"WhatsApp", priority:"Hot", stage:"Negotiation", due:"Today", prop:"Palm Grove Apartments, Bengaluru"},
+    {id:6, name:"David Lee", phone:"+1 646 555 0143", email:"", want:"1-bed condo, Brooklyn NY", budget:"$520,000", source:"Phone call", priority:"Cold", stage:"New", due:"Next week", prop:""},
+    {id:7, name:"Sneha Kulkarni", phone:"+91 98225 33001", email:"sneha.k@gmail.com", want:"Villa in Baner, Pune", budget:"₹1.8 crore", source:"Walk-in", priority:"Warm", stage:"Closed", due:"Done", prop:"Baner Courtyard Villa, Pune"},
+    {id:8, name:"James Wilson", phone:"+1 305 555 0169", email:"jwilson@gmail.com", want:"Waterfront condo, Miami FL", budget:"$680,000", source:"Website", priority:"Hot", stage:"Contacted", due:"In 3 days", prop:""}
+  ];
+
+  var properties = [
+    {name:"Skyline Residency, Andheri", place:"Andheri West, Mumbai", price:"₹85 lakh", specs:["2 BHK","980 sq.ft","Ready to move"], status:"Available", cls:"t1"},
+    {name:"Lakeview Family Home, Orlando", place:"Orlando, Florida", price:"$420,000", specs:["3 bed · 2 bath","1,850 sq.ft","Single family"], status:"Available", cls:"t2"},
+    {name:"Palm Grove Apartments, Bengaluru", place:"Whitefield, Bengaluru", price:"₹1.1 crore", specs:["3 BHK","1,450 sq.ft","Gated community"], status:"Under negotiation", cls:"t3"},
+    {name:"Business Tower Office, Gurugram", place:"Cyber City, Gurugram", price:"₹2.5 crore", specs:["Office","2,200 sq.ft","Furnished"], status:"Available", cls:"t4"},
+    {name:"Baner Courtyard Villa, Pune", place:"Baner, Pune", price:"₹1.8 crore", specs:["4 BHK villa","2,900 sq.ft","Private garden"], status:"Sold", cls:"t1"}
+  ];
+
+  var tasks = [
+    {id:1, who:"Rahul Sharma", what:"Call — share Skyline Residency floor plan and confirm Saturday visit", when:"Today", done:false},
+    {id:2, who:"Sarah Johnson", what:"Site visit at Lakeview Family Home, 4 PM — carry listing sheet", when:"Today", done:false},
+    {id:3, who:"Priya Nair", what:"Send final price offer for Palm Grove — negotiation stage", when:"Today", done:false},
+    {id:4, who:"Amit Verma", what:"WhatsApp the Gurugram office brochure and rent comparison", when:"Tomorrow", done:false},
+    {id:5, who:"Michael Carter", what:"First call — ask about Austin duplex budget and timeline", when:"Tomorrow", done:false},
+    {id:6, who:"Sneha Kulkarni", what:"Send thank-you message and registration papers copy", when:"Next week", done:true}
+  ];
+
+  var domains = [
+    {d:"nestorabuy.us", u:"CHOSEN for the CRM — clean real-estate name, separate from everything else. CRM address: crm.nestorabuy.us.", chosen:true},
+    {d:"web3estate.net", u:"Keep as a spare / redirect to nestorabuy.us so no client lands on a dead page."},
+    {d:"web3estate.us", u:"US-facing landing page for American brokerages, if you want one later."},
+    {d:"reproaster.com", u:"Product name domain — keep for the RepRoaster brand and checkout pages."},
+    {d:"reproaster.org / .online", u:"Spares for RepRoaster. Redirect them to reproaster.com."},
+    {d:"syedsenterprises.org / .net / .tech", u:"Your company hub stays here. Do not mix client CRM data into it."},
+    {d:"web3estate.org", u:"Previous CRM domain — redirect it to nestorabuy.us so old links keep working."},
+    {d:"trip24.us", u:"Travel venture domain — unrelated to the CRM, leave untouched."},
+    {d:"homealone.store", u:"Store venture domain — unrelated to the CRM, leave untouched."}
+  ];
+
+  var nextLeadId = 9, nextTaskId = 7;
+  var filterPri = "", filterStage = "", searchText = "";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function toast(msg){
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove("show"); }, 2600);
+  }
+  function priBadge(p){ return '<span class="badge b-'+p.toLowerCase()+'">'+(p==="Hot"?"🔥 ":"")+esc(p)+'</span>'; }
+  function telLink(phone){ return "tel:"+phone.replace(/[^+\d]/g,""); }
+  function waLink(phone){
+    var d = phone.replace(/\D/g,"");
+    return "https://wa.me/"+d;
+  }
+
+  /* ---------- Navigation ---------- */
+  function showView(name){
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.toggle("active", v.id==="view-"+name); });
+    document.querySelectorAll("[data-nav] button").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-view")===name); });
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  document.querySelectorAll("[data-nav] button").forEach(function(b){
+    b.addEventListener("click", function(){ showView(b.getAttribute("data-view")); });
+  });
+  document.querySelectorAll("[data-goto]").forEach(function(b){
+    b.addEventListener("click", function(){
+      showView(b.getAttribute("data-goto"));
+      if(b.getAttribute("data-open-add")){ openAddForm(); }
+    });
+  });
+
+  /* ---------- Lead card ---------- */
+  function leadCard(l){
+    var opts = STAGES.map(function(s){ return '<option value="'+s+'"'+(s===l.stage?" selected":"")+'>'+s+'</option>'; }).join("");
+    var dueCls = (l.due==="Today" && l.stage!=="Closed") ? "due over" : "due";
+    var dueTxt = l.stage==="Closed" ? "Deal closed 🎉" : ("Next follow-up: "+esc(l.due));
+    var contact = '<a class="btn btn-ghost btn-small" href="'+telLink(l.phone)+'">📞 Call</a>'
+      + '<a class="btn btn-ghost btn-small" href="'+waLink(l.phone)+'" target="_blank" rel="noopener">WhatsApp</a>'
+      + (l.email ? '<a class="btn btn-ghost btn-small" href="mailto:'+esc(l.email)+'">Email</a>' : '');
+    return '<article class="card lead">'
+      + '<div><div class="top"><span class="name">'+esc(l.name)+'</span>'+priBadge(l.priority)+'<span class="badge b-stage">'+esc(l.stage)+'</span></div>'
+      + '<div class="meta">'+esc(l.phone)+(l.email?" · "+esc(l.email):"")+' · via '+esc(l.source)+'</div>'
+      + '<div class="want">Looking for: <b>'+esc(l.want||"—")+'</b>'+(l.budget?' · Budget: <b>'+esc(l.budget)+'</b>':"")+(l.prop?'<br>Interested in: <b>'+esc(l.prop)+'</b>':"")+'</div></div>'
+      + '<div class="actions">'+contact+'</div>'
+      + '<div class="footrow"><label for="stage-'+l.id+'">Move to stage:</label><select id="stage-'+l.id+'" data-stage-for="'+l.id+'">'+opts+'</select>'
+      + '<button class="btn btn-ghost btn-small" data-next="'+l.id+'">Next step →</button>'
+      + '<span class="'+dueCls+'">'+dueTxt+'</span></div>'
+      + '</article>';
+  }
+  function bindLeadCards(container){
+    container.querySelectorAll("[data-stage-for]").forEach(function(sel){
+      sel.addEventListener("change", function(){
+        var l = leads.find(function(x){ return x.id==sel.getAttribute("data-stage-for"); });
+        if(l){ l.stage = sel.value; if(l.stage==="Closed"){ l.due="Done"; } renderAll(); toast(l.name+" moved to "+l.stage); }
+      });
+    });
+    container.querySelectorAll("[data-next]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var l = leads.find(function(x){ return x.id==btn.getAttribute("data-next"); });
+        if(!l) return;
+        var i = STAGES.indexOf(l.stage);
+        if(i < STAGES.length-1){ l.stage = STAGES[i+1]; if(l.stage==="Closed"){ l.due="Done"; } renderAll(); toast(l.name+" → "+l.stage); }
+        else { toast(l.name+" is already Closed"); }
+      });
+    });
+  }
+
+  /* ---------- Renders ---------- */
+  function renderStats(){
+    $("statTotal").textContent = leads.length;
+    $("statHot").textContent = leads.filter(function(l){return l.priority==="Hot" && l.stage!=="Closed";}).length;
+    $("statToday").textContent = tasks.filter(function(t){return t.when==="Today" && !t.done;}).length;
+    $("statClosed").textContent = leads.filter(function(l){return l.stage==="Closed";}).length;
+    $("navLeadCount").textContent = leads.length;
+    $("navTaskCount").textContent = tasks.filter(function(t){return !t.done;}).length;
+  }
+  function renderPipeSummary(){
+    var max = Math.max.apply(null, STAGES.map(function(s){ return leads.filter(function(l){return l.stage===s;}).length; }).concat([1]));
+    $("pipeSummary").innerHTML = STAGES.map(function(s){
+      var n = leads.filter(function(l){return l.stage===s;}).length;
+      return '<div class="pipe-row"><span class="name">'+s+'</span><span class="pipe-bar"><i style="width:'+Math.round(n/max*100)+'%"></i></span><span class="n">'+n+'</span></div>';
+    }).join("");
+  }
+  function taskItem(t, compact){
+    return '<div class="task-item'+(t.done?" done":"")+'"><span class="task-dot'+(t.when==="Today" && !t.done?" today":"")+'"></span>'
+      + '<div><div class="who">'+esc(t.who)+'</div><div class="what">'+esc(t.what)+' · <b>'+esc(t.when)+'</b></div></div>'
+      + (t.done ? '<span class="sp badge b-plain">Done</span>' : '<span class="sp"><button class="btn btn-ghost btn-small" data-done-task="'+t.id+'">Mark done</button></span>')
+      + '</div>';
+  }
+  function bindTasks(container){
+    container.querySelectorAll("[data-done-task]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var t = tasks.find(function(x){ return x.id==b.getAttribute("data-done-task"); });
+        if(t){ t.done = true; renderAll(); toast("Done: "+t.who); }
+      });
+    });
+  }
+  function renderToday(){
+    var today = tasks.filter(function(t){ return t.when==="Today"; });
+    $("todayList").innerHTML = today.length ? today.map(function(t){ return taskItem(t,true); }).join("") : '<div class="empty"><strong>Nothing due today</strong>Add a follow-up from the Follow-ups tab.</div>';
+    bindTasks($("todayList"));
+  }
+  function renderTasks(){
+    var order = {"Today":0,"Tomorrow":1,"Next week":2};
+    var sorted = tasks.slice().sort(function(a,b){ return (a.done-b.done) || ((order[a.when]||3)-(order[b.when]||3)); });
+    $("taskList").innerHTML = sorted.length ? sorted.map(function(t){ return taskItem(t,false); }).join("") : '<div class="empty"><strong>No follow-ups</strong>Add your first one below.</div>';
+    bindTasks($("taskList"));
+  }
+  function renderRecent(){
+    var recent = leads.slice(-3).reverse();
+    $("recentLeads").innerHTML = recent.map(leadCard).join("");
+    bindLeadCards($("recentLeads"));
+  }
+  function renderLeads(){
+    var list = leads.filter(function(l){
+      if(filterPri && l.priority!==filterPri) return false;
+      if(filterStage && l.stage!==filterStage) return false;
+      if(searchText){
+        var hay = (l.name+" "+l.phone+" "+(l.email||"")+" "+(l.want||"")+" "+(l.prop||"")).toLowerCase();
+        if(hay.indexOf(searchText)===-1) return false;
+      }
+      return true;
+    });
+    $("leadCountLine").textContent = "Showing "+list.length+" of "+leads.length+" leads";
+    $("leadList").innerHTML = list.length ? list.slice().reverse().map(leadCard).join("") : '<div class="card empty"><strong>No leads match</strong>Try a different search or filter — or add a new lead.</div>';
+    bindLeadCards($("leadList"));
+  }
+  function renderPipeline(){
+    $("pipeGrid").innerHTML = STAGES.map(function(s, si){
+      var inStage = leads.filter(function(l){ return l.stage===s; });
+      var cards = inStage.length ? inStage.map(function(l){
+        return '<div class="mini"><div class="n">'+esc(l.name)+' '+priBadge(l.priority)+'</div>'
+          + '<div class="d">'+esc(l.want||"")+(l.budget?" · "+esc(l.budget):"")+'</div>'
+          + '<div class="row">'
+          + '<button class="btn btn-ghost btn-small" data-move="'+l.id+'|-1" '+(si===0?"disabled style=\"opacity:.4\"":"")+'>← Back</button>'
+          + '<button class="btn btn-primary btn-small" data-move="'+l.id+'|1" '+(si===STAGES.length-1?"disabled style=\"opacity:.4\"":"")+'>Forward →</button>'
+          + '</div></div>';
+      }).join("") : '<div class="col-empty">No deals here yet</div>';
+      return '<div class="card col"><div class="col-head"><span class="t">'+s+'</span><span class="c">'+inStage.length+'</span></div>'+cards+'</div>';
+    }).join("");
+    $("pipeGrid").querySelectorAll("[data-move]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var parts = b.getAttribute("data-move").split("|");
+        var l = leads.find(function(x){ return x.id==parts[0]; });
+        if(!l) return;
+        var i = STAGES.indexOf(l.stage) + parseInt(parts[1],10);
+        if(i>=0 && i<STAGES.length){ l.stage = STAGES[i]; if(l.stage==="Closed"){ l.due="Done"; } renderAll(); toast(l.name+" → "+l.stage); }
+      });
+    });
+  }
+  function renderProps(){
+    $("propGrid").innerHTML = properties.map(function(p){
+      var interested = leads.filter(function(l){ return l.prop===p.name; });
+      var names = interested.map(function(l){ return l.name; }).join(", ");
+      return '<article class="card prop"><div class="thumb '+p.cls+'"><span class="tag">'+esc(p.status)+'</span></div>'
+        + '<div class="body"><div class="price">'+esc(p.price)+'</div>'
+        + '<h3 style="margin-top:4px">'+esc(p.name)+'</h3>'
+        + '<div class="specs"><span>📍 '+esc(p.place)+'</span>'+p.specs.map(function(s){ return "<span>"+esc(s)+"</span>"; }).join("")+'</div>'
+        + '<div class="interested">'+(interested.length ? '<b>'+interested.length+' lead'+(interested.length>1?"s":"")+' interested</b> — '+esc(names) : 'No leads matched yet — share this listing to get enquiries.')+'</div>'
+        + '</div></article>';
+    }).join("");
+  }
+  function renderDomains(){
+    $("domainGrid").innerHTML = domains.map(function(x){
+      return '<div class="card domain-card'+(x.chosen?" chosen":"")+'"><div class="d">'+esc(x.d)+'</div><div class="u">'+esc(x.u)+'</div>'+(x.chosen?'<span class="badge b-stage" style="margin-top:8px">✓ CRM home</span>':"")+'</div>';
+    }).join("");
+  }
+  function renderAll(){ renderStats(); renderPipeSummary(); renderToday(); renderTasks(); renderRecent(); renderLeads(); renderPipeline(); renderProps(); }
+
+  /* ---------- Filters ---------- */
+  var stageSel = $("stageFilter");
+  stageSel.innerHTML = '<option value="">All stages</option>' + STAGES.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join("");
+  stageSel.addEventListener("change", function(){ filterStage = stageSel.value; renderLeads(); });
+  $("searchBox").addEventListener("input", function(e){ searchText = e.target.value.trim().toLowerCase(); renderLeads(); });
+  $("priorityChips").querySelectorAll(".chip").forEach(function(c){
+    c.addEventListener("click", function(){
+      $("priorityChips").querySelectorAll(".chip").forEach(function(x){ x.classList.remove("active"); });
+      c.classList.add("active"); filterPri = c.getAttribute("data-pri"); renderLeads();
+    });
+  });
+
+  /* ---------- Add lead ---------- */
+  function openAddForm(){ $("addCard").hidden = false; $("fName").focus(); }
+  function closeAddForm(){ $("addCard").hidden = true; $("addForm").reset(); $("formError").classList.remove("show"); }
+  $("toggleAddBtn").addEventListener("click", function(){ $("addCard").hidden ? openAddForm() : closeAddForm(); });
+  $("cancelAddBtn").addEventListener("click", closeAddForm);
+  $("addForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var name = $("fName").value.trim(), phone = $("fPhone").value.trim();
+    if(!name || !phone){
+      var err = $("formError"); err.textContent = "Please fill the name and phone number — those two are required."; err.classList.add("show"); return;
+    }
+    leads.push({
+      id: nextLeadId++, name:name, phone:phone, email:$("fEmail").value.trim(),
+      want:$("fWant").value.trim(), budget:$("fBudget").value.trim(), source:$("fSource").value,
+      priority:$("fPriority").value, stage:"New", due:$("fDue").value, prop:""
+    });
+    closeAddForm(); renderAll(); toast("Lead added: "+name+" (stage: New)");
+  });
+
+  /* ---------- Add task ---------- */
+  $("taskForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var who = $("tWho").value.trim(), what = $("tWhat").value.trim();
+    if(!who || !what){
+      var err = $("taskError"); err.textContent = "Please fill the person and what to do."; err.classList.add("show"); return;
+    }
+    $("taskError").classList.remove("show");
+    tasks.push({id: nextTaskId++, who:who, what:what, when:$("tWhen").value, done:false});
+    e.target.reset(); renderAll(); toast("Follow-up added for "+who);
+  });
+
+  /* ---------- Export CSV ---------- */
+  $("exportBtn").addEventListener("click", function(){
+    var rows = [["Name","Phone","Email","Looking for","Budget","Source","Priority","Stage","Next follow-up","Property"]];
+    leads.forEach(function(l){ rows.push([l.name,l.phone,l.email||"",l.want||"",l.budget||"",l.source,l.priority,l.stage,l.due,l.prop||""]); });
+    var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(","); }).join("\n");
+    var blob = new Blob([csv], {type:"text/csv"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "nestorabuy-leads.csv";
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    toast("Downloaded "+leads.length+" leads as CSV");
+  });
+
+  renderDomains();
+  renderAll();
+})();
+</script>
+</body>
+</html>
